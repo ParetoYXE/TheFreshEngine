@@ -9,6 +9,8 @@ Handgun3Img = pygame.image.load("Handgun3.png")
 demonImg = pygame.image.load("Demon.png")
 wallImg = pygame.image.load("stoneWall.png")
 scifiWallImg = pygame.image.load("scifiWallSprite.png")
+computerSpriteImg = pygame.image.load("computerSprite.png")
+brickWallImg = pygame.image.load("brickWallSprite.png")
 
 entities = []
 
@@ -47,24 +49,24 @@ levelMap = [0,0,0,0,0,0,0,0,0,0,
 			0,0,0,0,0,0,0,0,0,0,
 			0,0,0,0,0,0,0,0,0,0,
 			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,4,0,4,0,
-			0,0,0,0,0,0,4,0,4,0,
-			0,0,0,0,0,0,4,0,4,0,
-			0,0,0,0,0,0,4,0,4,0,
-			4,4,4,4,4,0,4,0,5,0,
-			4,0,0,5,5,5,5,0,5,5,
-			4,0,0,0,0,0,0,0,5,5,
-			4,4,0,5,5,5,5,0,5,5,
-			4,0,0,4,0,0,5,0,5,0,
-			4,1,0,4,5,5,5,0,5,0,
-			4,0,0,4,5,5,0,0,5,5,
-			4,0,0,4,5,5,0,0,0,5,
-			4,0,0,4,5,0,0,0,0,5,
-			4,4,4,4,5,5,5,5,5,5,
+			0,0,6,6,6,6,6,6,6,0,
+			0,0,6,0,0,0,0,0,6,0,
+			0,0,6,0,0,0,6,0,6,0,
+			0,0,6,0,0,0,6,0,6,0,
+			0,0,6,0,0,0,6,0,6,0,
+			0,0,6,0,0,0,6,0,6,0,
+			0,0,6,6,6,6,6,0,6,0,
+			0,0,0,0,0,0,6,0,6,0,
+			4,4,4,4,4,4,6,0,6,4,
+			4,0,4,0,0,5,0,0,0,4,
+			4,0,4,0,0,5,0,0,0,4,
+			4,0,4,0,3,5,0,0,0,4,
+			4,0,4,0,0,5,5,0,5,5,
+			4,1,4,0,0,0,0,0,0,4,
+			4,0,4,0,0,3,0,0,0,4,
+			4,0,4,0,0,0,0,0,0,4,
+			4,3,0,0,0,0,0,0,0,4,
+			4,4,4,4,4,4,4,4,4,4,
 			0,0,0,0,0,0,0,0,0,0,
 			0,0,0,0,0,0,0,0,0,0,
 			0,0,0,0,0,0,0,0,0,0,
@@ -120,8 +122,6 @@ def drawView():
 			elif(i["Scale"] > 3):
 				i["Img"] = pygame.transform.scale(i["Img"], (400, 100))
 				i["Y"] = 200
-			else:
-				i["Img"] = pygame.transform.scale(i["Img"], (0,0))
 				
 
 		if(i["View"]==1):
@@ -131,7 +131,7 @@ def drawView():
 			else:
 				pos = i["Pos"]
 				drawAsWall = False
-				for j in range(1,3):
+				for j in range(1,5):
 					if(playerOrientation == 1):
 						if(levelMap[pos + 1 * j] > 1):
 							drawAsWall = True
@@ -158,8 +158,6 @@ def drawView():
 					elif(i["Scale"] > 3):
 						i["Img"] = pygame.transform.scale(i["Img"], (200, 100))
 						i["Y"] = 200
-					else:
-						i["Img"] = pygame.transform.scale(i["Img"], (0,0))
 				else:
 					if(i["Scale"] == 0):
 						i["Img"] = pygame.transform.scale(i["Img"], (20, 600))
@@ -175,7 +173,7 @@ def drawView():
 			else:
 				pos = i["Pos"]
 				drawAsWall = False
-				for j in range(1,3):
+				for j in range(1,5):
 					if(playerOrientation == 1):
 						if(levelMap[pos - (1*j)] > 1):
 							drawAsWall = True
@@ -190,8 +188,7 @@ def drawView():
 							drawAsWall = True
 
 				if(drawAsWall):
-					if(i[
-						"Scale"] == 1):
+					if(i["Scale"] == 1):
 						i["Img"] = pygame.transform.scale(i["Img"], (200, 500))
 						i["Y"] = 0
 					elif(i["Scale"] == 2):
@@ -233,91 +230,135 @@ def updateView():
 		#Use for setting obj into the enviroment. Repeat for more.
 		if(view <= len(levelMap) and playerOrientation == 1):
 			if levelMap[view] == 3:
-				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos": view,"Scale": i,"View":0})
+				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos": view,"Scale": i,"View":0,"Name":"Demon"})
 			if levelMap[view-1] == 3:
-				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos": view - 1,"Scale": i,"View":1})
+				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos": view - 1,"Scale": i,"View":1,"Name":"Demon"})
 			if levelMap[view+1] == 3:
-				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view + 1,"Scale": i,"View":2})
+				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view + 1,"Scale": i,"View":2,"Name":"Demon"})
 
 			if levelMap[view] == 4:
-				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0})
+				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0,"Name":"Wall"})
 			if levelMap[view-1] == 4:
-				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view - 1,"Scale": i,"View":1})
+				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view - 1,"Scale": i,"View":1,"Name":"Wall"})
 			if levelMap[view+1] == 4:
-				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view + 1,"Scale": i,"View":2})
+				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view + 1,"Scale": i,"View":2,"Name":"Wall"})
+
 
 			if levelMap[view] == 5:
-				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0})
-			if levelMap[view-length] == 5:
-				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view - length,"Scale": i,"View":1})
-			if levelMap[view+length] == 5:
-				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view + length,"Scale": i,"View":2})
+				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0,"Name":"ScifiWall"})
+			if levelMap[view-1] == 5:
+				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view - 1,"Scale": i,"View":1,"Name":"ScifiWall"})
+			if levelMap[view+1] == 5:
+				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view + 1,"Scale": i,"View":2,"Name":"ScifiWall"})
+
+
+			if levelMap[view] == 6:
+				entities.append({"X":200,"Y":200,"Img":brickWallImg,"Pos":view,"Scale": i,"View":0,"Name":"BrickWall"})
+			if levelMap[view-1] == 6:
+				entities.append({"X":0,"Y":200,"Img":brickWallImg,"Pos":view - 1,"Scale": i,"View":1,"Name":"BrickWall"})
+			if levelMap[view+1] == 6:
+				entities.append({"X":600,"Y":200,"Img":brickWallImg,"Pos":view + 1,"Scale": i,"View":2,"Name":"BrickWall"})
+
+
 		if(view <= len(levelMap) and playerOrientation == -1):
 			if levelMap[view] == 3:
-				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos":view,"Scale": i,"View":0})
+				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos":view,"Scale": i,"View":0,"Name":"Demon"})
 			if levelMap[view-1] == 3:
-				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view - 1,"Scale": i,"View":2})
+				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view - 1,"Scale": i,"View":2,"Name":"Demon"})
 			if levelMap[view+1] == 3:
-				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos":view + 1,"Scale": i,"View":1})
+				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos":view + 1,"Scale": i,"View":1,"Name":"Demon"})
 
 			if levelMap[view] == 4:
-				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0})
+				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0,"Name":"Wall"})
 			if levelMap[view-1] == 4:
-				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view - 1,"Scale": i,"View":2})
+				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view - 1,"Scale": i,"View":2,"Name":"Wall"})
 			if levelMap[view+1] == 4:
-				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view + 1,"Scale": i,"View":1})
+				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view + 1,"Scale": i,"View":1,"Name":"Wall"})
+
 
 			if levelMap[view] == 5:
-				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0})
-			if levelMap[view-length] == 5:
-				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view - length,"Scale": i,"View":1})
+				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0,"Name":"ScifiWall"})
+			if levelMap[view-1] == 5:
+				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view - 1,"Scale": i,"View":2,"Name":"ScifiWall"})
+			if levelMap[view+1] == 5:
+				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view + 1,"Scale": i,"View":1,"Name":"ScifiWall"})
 
-			print(len(levelMap))
-			print(view+length)
-			if levelMap[view+length] == 5:
-				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view + length,"Scale": i,"View":2})
+
+
+			if levelMap[view] == 6:
+				entities.append({"X":200,"Y":200,"Img":brickWallImg,"Pos":view,"Scale": i,"View":0,"Name":"BrickWall"})
+			if levelMap[view-1] == 6:
+				entities.append({"X":600,"Y":200,"Img":brickWallImg,"Pos":view - 1,"Scale": i,"View":2,"Name":"BrickWall"})
+			if levelMap[view+1] == 6:
+				entities.append({"X":0,"Y":200,"Img":brickWallImg,"Pos":view + 1,"Scale": i,"View":1,"Name":"BrickWall"})
+
+
 		if(view <= len(levelMap) and playerOrientation == 2):
 			if levelMap[view] == 3:
-				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos":view,"Scale": i,"View":0})
+				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos":view,"Scale": i,"View":0,"Name":"Demon"})
 			if levelMap[view-length] == 3:
-				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos":view - length,"Scale": i,"View":1})
+				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos":view - length,"Scale": i,"View":1,"Name":"Demon"})
 			if levelMap[view+length] == 3:
-				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view + length,"Scale": i,"View":2})
+				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view + length,"Scale": i,"View":2,"Name":"Demon"})
 
 			if levelMap[view] == 4:
-				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0})
+				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0,"Name":"Wall"})
 			if levelMap[view-length] == 4:
-				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view - length,"Scale": i,"View":1})
+				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view - length,"Scale": i,"View":1,"Name":"Wall"})
 			if levelMap[view+length] == 4:
-				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view + length,"Scale": i,"View":2})
+				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view + length,"Scale": i,"View":2,"Name":"Wall"})
+
 
 			if levelMap[view] == 5:
-				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0})
+				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0,"Name":"ScifiWall"})
 			if levelMap[view-length] == 5:
-				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view - length,"Scale": i,"View":1})
+				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view - length,"Scale": i,"View":1,"Name":"ScifiWall"})
 			if levelMap[view+length] == 5:
-				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view + length,"Scale": i,"View":2})
+				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view + length,"Scale": i,"View":2,"Name":"ScifiWall"})
+
+
+			if levelMap[view] == 6:
+				entities.append({"X":200,"Y":200,"Img":brickWallImg,"Pos":view,"Scale": i,"View":0,"Name":"BrickWall"})
+			if levelMap[view-length] == 6:
+				entities.append({"X":0,"Y":200,"Img":brickWallImg,"Pos":view - length,"Scale": i,"View":1,"Name":"BrickWall"})
+			if levelMap[view+length] == 6:
+				entities.append({"X":600,"Y":200,"Img":brickWallImg,"Pos":view + length,"Scale": i,"View":2,"Name":"BrickWall"})
+
+
+			
+
+
 		if(view <= len(levelMap) and playerOrientation == -2):
 			if levelMap[view] == 3:
-				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos":view,"Scale": i,"View":0})
+				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos":view,"Scale": i,"View":0,"Name":"Demon"})
 			if levelMap[view-length] == 3:
-				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view - length,"Scale": i,"View":2})
+				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view - length,"Scale": i,"View":2,"Name":"Demon"})
 			if levelMap[view+length] == 3:
-				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos":view + length,"Scale": i,"View":1})
+				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos":view + length,"Scale": i,"View":1,"Name":"Demon"})
 
 			if levelMap[view] == 4:
-				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0})
+				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0,"Name":"Wall"})
 			if levelMap[view-length] == 4:
-				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view - length,"Scale": i,"View":2})
+				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view - length,"Scale": i,"View":2,"Name":"Wall"})
 			if levelMap[view+length] == 4:
-				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view + length,"Scale": i,"View":1})
+				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view + length,"Scale": i,"View":1,"Name":"Wall"})
+
 
 			if levelMap[view] == 5:
-				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0})
+				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0,"Name":"ScifiWall"})
 			if levelMap[view-length] == 5:
-				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view - length,"Scale": i,"View":1})
+				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view - length,"Scale": i,"View":2,"Name":"ScifiWall"})
 			if levelMap[view+length] == 5:
-				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view + length,"Scale": i,"View":2})
+				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view + length,"Scale": i,"View":1,"Name":"ScifiWall"})
+
+			if levelMap[view] == 6:
+				entities.append({"X":200,"Y":200,"Img":brickWallImg,"Pos":view,"Scale": i,"View":0,"Name":"BrickWall"})
+			if levelMap[view-length] == 6:
+				entities.append({"X":600,"Y":200,"Img":brickWallImg,"Pos":view - length,"Scale": i,"View":2,"Name":"BrickWall"})
+			if levelMap[view+length] == 6:
+				entities.append({"X":0,"Y":200,"Img":brickWallImg,"Pos":view + length,"Scale": i,"View":1,"Name":"BrickWall"})
+			
+
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -343,21 +384,21 @@ while not done:
 				oldPlayerPos = playerPos
 				levelMap[oldPlayerPos] = 0
 				if(playerOrientation == 1):
-					if(levelMap[playerPos-length] != 4 and levelMap[playerPos-length] != 5):
+					if(levelMap[playerPos-length] != 4 and levelMap[playerPos-length] != 5 and levelMap[playerPos-length] != 6 and levelMap[playerPos-length] != 3):
 						playerPos -=length
 				elif(playerOrientation == -1):
-					if(levelMap[playerPos+length] != 4 and levelMap[playerPos+length] != 5):
+					if(levelMap[playerPos+length] != 4 and levelMap[playerPos+length] != 5 and levelMap[playerPos+length] != 6 and levelMap[playerPos+length] != 3):
 						playerPos +=length
 				elif(playerOrientation == 2):
-					if(levelMap[playerPos+1] != 4  and levelMap[playerPos+1] != 5):
+					if(levelMap[playerPos+1] != 4  and levelMap[playerPos+1] != 5 and levelMap[playerPos+1] != 6 and levelMap[playerPos+1] != 3):
 						playerPos +=1
 				elif(playerOrientation == -2):
-					if(levelMap[playerPos-1] != 4 and levelMap[playerPos-1] != 5 ):
+					if(levelMap[playerPos-1] != 4 and levelMap[playerPos-1] != 5 and levelMap[playerPos-1] != 6 and levelMap[playerPos-1] != 3):
 						playerPos -=1
 			if event.key == pygame.K_s:
 				playerOrientation = playerOrientation * -1
 			if event.key == pygame.K_d:
-				print(entities)
+		
 				if(playerOrientation == 1):
 					playerOrientation = 2
 				elif(playerOrientation == 2):
@@ -367,7 +408,7 @@ while not done:
 				elif(playerOrientation == -2):
 					playerOrientation = 1
 			if event.key == pygame.K_a:
-				print(entities)
+		
 				if(playerOrientation == 1):
 					playerOrientation = -2
 				elif(playerOrientation == -2):
@@ -376,7 +417,6 @@ while not done:
 					playerOrientation = 2
 				elif(playerOrientation == 2):
 					playerOrientation = 1
-				print(playerOrientation)
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 				pos = pygame.mouse.get_pos()
@@ -385,7 +425,11 @@ while not done:
 
 
 
-
+				for i in entities: 
+					if i["Name"] == "Demon":
+						if(i["X"] <= pos[0] and pos[0] <= i["X"] + (500 / i["Scale"])):
+							if(i["Y"] <= pos[1] and pos[1] <= i["Y"]+ (500 / i["Scale"])):
+								levelMap[i["Pos"]] = 0
 				#Should be handled last. Player Hand bob and fire
 				if(fireToggle == 0):
 					fireToggle = 1
@@ -402,11 +446,6 @@ while not done:
 	
 	updateView()
 	drawView()
-	print("playerOrientation:" + str(playerOrientation))
-	print("Player Position: " + str(playerPos))
-	print("Entities:")
-	for i in entities:
-		print(i)
 	#This should always occur last
 	if(fireToggle == 0):
 		screen.blit(Handgun1Img,(gunX,gunY))
