@@ -1,93 +1,7 @@
 import pygame
 import random
 
-Handgun1Img = pygame.image.load("Handgun1.png")
-Handgun2Img = pygame.image.load("Handgun2.png")
-Handgun3Img = pygame.image.load("Handgun3.png")
 
-
-demonImg = pygame.image.load("Demon.png")
-wallImg = pygame.image.load("stoneWall.png")
-scifiWallImg = pygame.image.load("scifiWallSprite.png")
-computerSpriteImg = pygame.image.load("computerSprite.png")
-brickWallImg = pygame.image.load("brickWallSprite.png")
-
-entities = []
-
-fireToggle = 0
-gunX = 600 
-gunY = 500
-playerOrientation = 1
-playerPos = 25
-#Generic Start Map
-length = 10
-levelMap = [0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,6,6,6,6,6,6,6,0,
-			0,0,6,0,0,0,0,0,6,0,
-			0,0,6,0,0,0,6,0,6,0,
-			0,0,6,0,0,0,6,0,6,0,
-			0,0,6,0,0,0,6,0,6,0,
-			0,0,6,0,0,0,6,0,6,0,
-			0,0,6,6,6,6,6,0,6,0,
-			0,0,0,0,0,0,6,0,6,0,
-			4,4,4,4,4,4,6,0,6,4,
-			4,0,4,0,0,5,0,0,0,4,
-			4,0,4,0,0,5,0,0,0,4,
-			4,0,4,0,3,5,0,0,0,4,
-			4,0,4,0,0,5,5,0,5,5,
-			4,1,4,0,0,0,0,0,0,4,
-			4,0,4,0,0,3,0,0,0,4,
-			4,0,4,0,0,0,0,0,0,4,
-			4,3,0,0,0,0,0,0,0,4,
-			4,4,4,4,4,4,4,4,4,4,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,0,0,0]
 class Background(pygame.sprite.Sprite):
     def __init__(self, image_file, location):
         pygame.sprite.Sprite.__init__(self)  #call Sprite initializer
@@ -95,361 +9,183 @@ class Background(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = location
 
-
-def findPlayerPos(): 
-	for i in range(len(levelMap)):
-		if(levelMap[i] == 1):
-			global playerPos
-			playerPos = i
-def drawView():
-	count = 0
-	global entities
-	entities = entities[::-1]
-	for i in entities:
-		if(i["View"]==0):
-			if(i["Scale"] == 0):
-				i["Img"] = pygame.transform.scale(i["Img"], (400, 600))
-				i["Y"] = 0
-			elif(i["Scale"] == 1):
-				i["Img"] = pygame.transform.scale(i["Img"], (400, 500))
-				i["Y"] = 0
-			elif(i["Scale"] == 2):
-				i["Img"] = pygame.transform.scale(i["Img"], (400, 400))
-				i["Y"] = 0
-			elif(i["Scale"] == 3):
-				i["Img"] = pygame.transform.scale(i["Img"], (400, 300))
-				i["Y"] = 0
-			elif(i["Scale"] > 3):
-				i["Img"] = pygame.transform.scale(i["Img"], (400, 100))
-				i["Y"] = 200
-				
-
-		if(i["View"]==1):
-			if(i["Scale"] == 0):
-				i["Img"] = pygame.transform.scale(i["Img"], (20, 600))
-				i["Y"] = 0
-			else:
-				pos = i["Pos"]
-				drawAsWall = False
-				for j in range(1,5):
-					if(playerOrientation == 1):
-						if(levelMap[pos + 1 * j] > 1):
-							drawAsWall = True
-					if(playerOrientation == 2):
-						if(levelMap[pos + length * j] > 1):
-							drawAsWall = True
-					if(playerOrientation == -2):
-						if(levelMap[pos - (length*j)] > 1):
-							drawAsWall = True
-					if(playerOrientation == -1):
-						if(levelMap[pos - (1*j)] > 1):
-							drawAsWall = True
-
-				if(drawAsWall):
-					if(i["Scale"] == 1):
-						i["Img"] = pygame.transform.scale(i["Img"], (200, 500))
-						i["Y"] = 0
-					elif(i["Scale"] == 2):
-						i["Img"] = pygame.transform.scale(i["Img"], (200, 400))
-						i["Y"] = 0
-					elif(i["Scale"] == 3):
-						i["Img"] = pygame.transform.scale(i["Img"], (200, 300))
-						i["Y"] = 0
-					elif(i["Scale"] > 3):
-						i["Img"] = pygame.transform.scale(i["Img"], (200, 100))
-						i["Y"] = 200
-				else:
-					if(i["Scale"] == 0):
-						i["Img"] = pygame.transform.scale(i["Img"], (20, 600))
-						i["Y"] = 0
-					else:
-						i["Img"] = pygame.transform.scale(i["Img"], (0,0))
-				
-		if(i["View"]==2):
-			if(i["Scale"] == 0):
-				i["Img"] = pygame.transform.scale(i["Img"], (20, 600))
-				i["X"] = 780
-				i["Y"] = 0
-			else:
-				pos = i["Pos"]
-				drawAsWall = False
-				for j in range(1,5):
-					if(playerOrientation == 1):
-						if(levelMap[pos - (1*j)] > 1):
-							drawAsWall = True
-					if(playerOrientation == 2):
-						if(levelMap[pos - (length*j)] > 1):
-							drawAsWall = True
-					if(playerOrientation == -2):
-						if(levelMap[pos + length*j] > 1):
-							drawAsWall = True
-					if(playerOrientation == -1):
-						if(levelMap[pos + 1*j] > 1):
-							drawAsWall = True
-
-				if(drawAsWall):
-					if(i["Scale"] == 1):
-						i["Img"] = pygame.transform.scale(i["Img"], (200, 500))
-						i["Y"] = 0
-					elif(i["Scale"] == 2):
-						i["Img"] = pygame.transform.scale(i["Img"], (200, 400))
-						i["Y"] = 0
-					elif(i["Scale"] == 3):
-						i["Img"] = pygame.transform.scale(i["Img"], (200, 300))
-						i["Y"] = 0
-					elif(i["Scale"] > 3):
-
-						i["Img"] = pygame.transform.scale(i["Img"], (200, 100))
-						i["Y"] = 200
-					else:
-						i["Img"] = pygame.transform.scale(i["Img"], (0,0))
-				else:
-					if(i["Scale"] == 0):
-						i["Img"] = pygame.transform.scale(i["Img"], (20, 600))
-						i["Y"] = 0
-						i["X"] = 780
-					else:
-						i["Img"] = pygame.transform.scale(i["Img"], (0,0))
-
-		screen.blit(i["Img"],(i["X"],i["Y"]))
-
-def updateView():
-	#Draw entities based on View
-	global entities
-	entities = []
-	for i in range(0,10):
-		view = 0
-		if(playerOrientation==1):
-			view = (playerPos) - (length*i)
-		if(playerOrientation == -1):
-			view = (playerPos) + (length*i)
-		if(playerOrientation == 2):
-			view = (playerPos) + (1*i)
-		if(playerOrientation == -2):
-			view = (playerPos) - (1*i)
-		#Use for setting obj into the enviroment. Repeat for more.
-		if(view <= len(levelMap) and playerOrientation == 1):
-			if levelMap[view] == 3:
-				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos": view,"Scale": i,"View":0,"Name":"Demon"})
-			if levelMap[view-1] == 3:
-				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos": view - 1,"Scale": i,"View":1,"Name":"Demon"})
-			if levelMap[view+1] == 3:
-				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view + 1,"Scale": i,"View":2,"Name":"Demon"})
-
-			if levelMap[view] == 4:
-				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0,"Name":"Wall"})
-			if levelMap[view-1] == 4:
-				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view - 1,"Scale": i,"View":1,"Name":"Wall"})
-			if levelMap[view+1] == 4:
-				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view + 1,"Scale": i,"View":2,"Name":"Wall"})
-
-
-			if levelMap[view] == 5:
-				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0,"Name":"ScifiWall"})
-			if levelMap[view-1] == 5:
-				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view - 1,"Scale": i,"View":1,"Name":"ScifiWall"})
-			if levelMap[view+1] == 5:
-				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view + 1,"Scale": i,"View":2,"Name":"ScifiWall"})
-
-
-			if levelMap[view] == 6:
-				entities.append({"X":200,"Y":200,"Img":brickWallImg,"Pos":view,"Scale": i,"View":0,"Name":"BrickWall"})
-			if levelMap[view-1] == 6:
-				entities.append({"X":0,"Y":200,"Img":brickWallImg,"Pos":view - 1,"Scale": i,"View":1,"Name":"BrickWall"})
-			if levelMap[view+1] == 6:
-				entities.append({"X":600,"Y":200,"Img":brickWallImg,"Pos":view + 1,"Scale": i,"View":2,"Name":"BrickWall"})
-
-
-		if(view <= len(levelMap) and playerOrientation == -1):
-			if levelMap[view] == 3:
-				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos":view,"Scale": i,"View":0,"Name":"Demon"})
-			if levelMap[view-1] == 3:
-				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view - 1,"Scale": i,"View":2,"Name":"Demon"})
-			if levelMap[view+1] == 3:
-				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos":view + 1,"Scale": i,"View":1,"Name":"Demon"})
-
-			if levelMap[view] == 4:
-				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0,"Name":"Wall"})
-			if levelMap[view-1] == 4:
-				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view - 1,"Scale": i,"View":2,"Name":"Wall"})
-			if levelMap[view+1] == 4:
-				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view + 1,"Scale": i,"View":1,"Name":"Wall"})
-
-
-			if levelMap[view] == 5:
-				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0,"Name":"ScifiWall"})
-			if levelMap[view-1] == 5:
-				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view - 1,"Scale": i,"View":2,"Name":"ScifiWall"})
-			if levelMap[view+1] == 5:
-				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view + 1,"Scale": i,"View":1,"Name":"ScifiWall"})
-
-
-
-			if levelMap[view] == 6:
-				entities.append({"X":200,"Y":200,"Img":brickWallImg,"Pos":view,"Scale": i,"View":0,"Name":"BrickWall"})
-			if levelMap[view-1] == 6:
-				entities.append({"X":600,"Y":200,"Img":brickWallImg,"Pos":view - 1,"Scale": i,"View":2,"Name":"BrickWall"})
-			if levelMap[view+1] == 6:
-				entities.append({"X":0,"Y":200,"Img":brickWallImg,"Pos":view + 1,"Scale": i,"View":1,"Name":"BrickWall"})
-
-
-		if(view <= len(levelMap) and playerOrientation == 2):
-			if levelMap[view] == 3:
-				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos":view,"Scale": i,"View":0,"Name":"Demon"})
-			if levelMap[view-length] == 3:
-				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos":view - length,"Scale": i,"View":1,"Name":"Demon"})
-			if levelMap[view+length] == 3:
-				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view + length,"Scale": i,"View":2,"Name":"Demon"})
-
-			if levelMap[view] == 4:
-				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0,"Name":"Wall"})
-			if levelMap[view-length] == 4:
-				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view - length,"Scale": i,"View":1,"Name":"Wall"})
-			if levelMap[view+length] == 4:
-				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view + length,"Scale": i,"View":2,"Name":"Wall"})
-
-
-			if levelMap[view] == 5:
-				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0,"Name":"ScifiWall"})
-			if levelMap[view-length] == 5:
-				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view - length,"Scale": i,"View":1,"Name":"ScifiWall"})
-			if levelMap[view+length] == 5:
-				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view + length,"Scale": i,"View":2,"Name":"ScifiWall"})
-
-
-			if levelMap[view] == 6:
-				entities.append({"X":200,"Y":200,"Img":brickWallImg,"Pos":view,"Scale": i,"View":0,"Name":"BrickWall"})
-			if levelMap[view-length] == 6:
-				entities.append({"X":0,"Y":200,"Img":brickWallImg,"Pos":view - length,"Scale": i,"View":1,"Name":"BrickWall"})
-			if levelMap[view+length] == 6:
-				entities.append({"X":600,"Y":200,"Img":brickWallImg,"Pos":view + length,"Scale": i,"View":2,"Name":"BrickWall"})
-
-
-			
-
-
-		if(view <= len(levelMap) and playerOrientation == -2):
-			if levelMap[view] == 3:
-				entities.append({"X":200,"Y":200,"Img":demonImg,"Pos":view,"Scale": i,"View":0,"Name":"Demon"})
-			if levelMap[view-length] == 3:
-				entities.append({"X":600,"Y":200,"Img":demonImg,"Pos":view - length,"Scale": i,"View":2,"Name":"Demon"})
-			if levelMap[view+length] == 3:
-				entities.append({"X":0,"Y":200,"Img":demonImg,"Pos":view + length,"Scale": i,"View":1,"Name":"Demon"})
-
-			if levelMap[view] == 4:
-				entities.append({"X":200,"Y":200,"Img":wallImg,"Pos":view,"Scale": i,"View":0,"Name":"Wall"})
-			if levelMap[view-length] == 4:
-				entities.append({"X":600,"Y":200,"Img":wallImg,"Pos":view - length,"Scale": i,"View":2,"Name":"Wall"})
-			if levelMap[view+length] == 4:
-				entities.append({"X":0,"Y":200,"Img":wallImg,"Pos":view + length,"Scale": i,"View":1,"Name":"Wall"})
-
-
-			if levelMap[view] == 5:
-				entities.append({"X":200,"Y":200,"Img":scifiWallImg,"Pos":view,"Scale": i,"View":0,"Name":"ScifiWall"})
-			if levelMap[view-length] == 5:
-				entities.append({"X":600,"Y":200,"Img":scifiWallImg,"Pos":view - length,"Scale": i,"View":2,"Name":"ScifiWall"})
-			if levelMap[view+length] == 5:
-				entities.append({"X":0,"Y":200,"Img":scifiWallImg,"Pos":view + length,"Scale": i,"View":1,"Name":"ScifiWall"})
-
-			if levelMap[view] == 6:
-				entities.append({"X":200,"Y":200,"Img":brickWallImg,"Pos":view,"Scale": i,"View":0,"Name":"BrickWall"})
-			if levelMap[view-length] == 6:
-				entities.append({"X":600,"Y":200,"Img":brickWallImg,"Pos":view - length,"Scale": i,"View":2,"Name":"BrickWall"})
-			if levelMap[view+length] == 6:
-				entities.append({"X":0,"Y":200,"Img":brickWallImg,"Pos":view + length,"Scale": i,"View":1,"Name":"BrickWall"})
-			
+Handgun1Img = pygame.image.load("Handgun1.png")
+Handgun2Img = pygame.image.load("Handgun2.png")
+Handgun3Img = pygame.image.load("Handgun3.png")
+BackGround3 = Background('HandGun3.png',[0,0])
+demonImg = pygame.image.load("Demon.png")
+demonDeath = pygame.image.load("demonDeath.png")
+BackGround = Background('Background.png', [0,0])
 
 
 pygame.init()
 clock = pygame.time.Clock()
 FPS = 60  # This variable will define how many frames we update per second.
 pygame.font.init() # you have to call this at the start, 
-screen = pygame.display.set_mode((800, 600))
-BackGround = Background('Background.png', [0,0])
-findPlayerPos()
-
-
+width = 800
+height = 600
+screen = pygame.display.set_mode((width, height))
+gunShot1Effect = pygame.mixer.Sound('gunShot.wav')
+gunShot2Effect = pygame.mixer.Sound('gunShot_2.wav')
+impactEffect = pygame.mixer.Sound("bulletImpact.wav")
+wallsprite = pygame.image.load("WallLeft.png")
+wallsprite2 = pygame.image.load("WallRight.png")
+cityimg = pygame.image.load("buildings-bg.png")
+cityimg2 = pygame.image.load("near-buildings-bg.png")
+drawEntitites = []
+drawBuildings = []
 done = False
+renderDis = 4
+fireToggle = 0
+PlayerOrientation = 2
+PlayerPos = 27
+levelD = 5
+enemyPos = 21
+enemyPos2 = 22
+enemyPos3 = 23
+levelMap = [0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0]
+
+levelMap[PlayerPos] = 1
+levelMap[enemyPos] = 2
+levelMap[enemyPos2] = 2
+levelMap[enemyPos3] = 2
+
+
+count = 0
+for i in levelMap: 
+	if(i == 1):
+		PlayerPos = count
+
+	count +=1
+gunX = 600 
+gunY = 500
+
+movementCount = 0
+
+
+playerScale = 1
+
+def viewRender():
+	global demonImg
+	global PlayerOrientation
+	if(PlayerOrientation == 1): 
+		for i in range(1,renderDis):
+			if(PlayerPos - i*levelD > 0):
+				tile = levelMap[PlayerPos - (i*levelD)]
+				if(tile > 0):
+					x = round(300 / i)
+					y = round(200 / i)
+					demonImg = pygame.transform.scale(demonImg,(x,y))
+					screen.blit(demonImg,(width/2 - 50,height/2))
+			if(((PlayerPos - i*levelD) - 1) > 0):
+				tile = levelMap[PlayerPos - (i*levelD) - 1]
+				if(tile > 0):
+					x = round(300 / i)
+					y = round(200 / i)
+					demonImg = pygame.transform.scale(demonImg,(x,y))
+					screen.blit(demonImg,(0,height/2))
+			if(((PlayerPos - i*levelD) + 1) > 0):
+				tile = levelMap[PlayerPos - (i*levelD) + 1]
+				if(tile > 0):
+					x = round(300 / i)
+					y = round(200 / i)
+					demonImg = pygame.transform.scale(demonImg,(x,y))
+					screen.blit(demonImg,(width*0.75,height/2))
+	if(PlayerOrientation == 2): 
+		for i in range(1,renderDis):
+			if(PlayerPos + i > 0):
+				tile = levelMap[PlayerPos + i]
+				if(tile > 0):
+					x = round(300 / i)
+					y = round(200 / i)
+					demonImg = pygame.transform.scale(demonImg,(x,y))
+					screen.blit(demonImg,(width/2 - 50,height/2))
+			if(((PlayerPos + i) - levelD) > 0):
+				tile = levelMap[PlayerPos + i - levelD]
+				if(tile > 0):
+					x = round(300 / i)
+					y = round(200 / i)
+					demonImg = pygame.transform.scale(demonImg,(x,y))
+					screen.blit(demonImg,(0,height/2))
+			if(((PlayerPos + i) + levelD) > 0):
+				tile = levelMap[PlayerPos + i + levelD]
+				if(tile > 0):
+					x = round(300 / i)
+					y = round(200 / i)
+					demonImg = pygame.transform.scale(demonImg,(x,y))
+					screen.blit(demonImg,(width*0.75,height/2))
+
+
+
+
+timer = pygame.time.get_ticks()
 while not done:
-	findPlayerPos()
 	clock.tick(FPS)
 	screen.fill([255, 255, 255])
 	screen.blit(BackGround.image, BackGround.rect)
+	movementCount +=1
+	#oldPlayerPos = PlayerPos
 
+
+	if pygame.time.get_ticks()-timer > 1000:
+	    timer = pygame.time.get_ticks()
+	    #do something every 1.0 seconds
+	    levelMap[enemyPos] = 0
+	    enemyPos+=levelD
+	    levelMap[enemyPos] = 2
+
+	    levelMap[enemyPos2] = 0
+	    enemyPos2+=levelD
+	    levelMap[enemyPos2] = 2
+
+	    levelMap[enemyPos3] = 0
+	    enemyPos3+=levelD
+	    levelMap[enemyPos3] = 2
 	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			done = True
-		if event.type == pygame.KEYUP:
-			if event.key == pygame.K_w:
-				oldPlayerPos = playerPos
-				levelMap[oldPlayerPos] = 0
-				if(playerOrientation == 1):
-					if(levelMap[playerPos-length] != 4 and levelMap[playerPos-length] != 5 and levelMap[playerPos-length] != 6 and levelMap[playerPos-length] != 3):
-						playerPos -=length
-				elif(playerOrientation == -1):
-					if(levelMap[playerPos+length] != 4 and levelMap[playerPos+length] != 5 and levelMap[playerPos+length] != 6 and levelMap[playerPos+length] != 3):
-						playerPos +=length
-				elif(playerOrientation == 2):
-					if(levelMap[playerPos+1] != 4  and levelMap[playerPos+1] != 5 and levelMap[playerPos+1] != 6 and levelMap[playerPos+1] != 3):
-						playerPos +=1
-				elif(playerOrientation == -2):
-					if(levelMap[playerPos-1] != 4 and levelMap[playerPos-1] != 5 and levelMap[playerPos-1] != 6 and levelMap[playerPos-1] != 3):
-						playerPos -=1
-			if event.key == pygame.K_s:
-				playerOrientation = playerOrientation * -1
-			if event.key == pygame.K_d:
-		
-				if(playerOrientation == 1):
-					playerOrientation = 2
-				elif(playerOrientation == 2):
-					playerOrientation = -1
-				elif(playerOrientation == -1):
-					playerOrientation = -2
-				elif(playerOrientation == -2):
-					playerOrientation = 1
-			if event.key == pygame.K_a:
-		
-				if(playerOrientation == 1):
-					playerOrientation = -2
-				elif(playerOrientation == -2):
-					playerOrientation = -1
-				elif(playerOrientation == -1):
-					playerOrientation = 2
-				elif(playerOrientation == 2):
-					playerOrientation = 1
 
-		if event.type == pygame.MOUSEBUTTONDOWN:
+			if event.type == pygame.QUIT:
+				done = True
+			if event.type == pygame.KEYUP:
+				if event.key == pygame.K_w:
+					if(PlayerOrientation == 1):
+						PlayerPos -= levelD
+						print(PlayerPos)
+				if event.key == pygame.K_a:
+					PlayerOrientation = 1
+			if event.type == pygame.MOUSEBUTTONDOWN:
 				pos = pygame.mouse.get_pos()
-
-
-
-
-
-				for i in entities: 
-					if i["Name"] == "Demon":
-						if(i["X"] <= pos[0] and pos[0] <= i["X"] + (500 / i["Scale"])):
-							if(i["Y"] <= pos[1] and pos[1] <= i["Y"]+ (500 / i["Scale"])):
-								levelMap[i["Pos"]] = 0
-				#Should be handled last. Player Hand bob and fire
+				if(pos[0] < gunX):
+					gunX -= 10
+				elif(pos[1] < gunX):
+					gunX += 10
 				if(fireToggle == 0):
 					fireToggle = 1
-				if(pos[0]-gunX < 0 and abs(pos[0]-gunX) > 20):
-					if(gunX >=300):
-						gunX -=20
-				if(pos[0]-gunX > 0 and abs(pos[0]-gunX) > 20):
-					if(gunX<=600):
-						gunX+=20
-
-		if event.type == pygame.MOUSEBUTTONUP:
+					gunShot2Effect.play()
+			if event.type == pygame.MOUSEBUTTONUP:
 				fireToggle = 0
+	
 
 	
-	updateView()
-	drawView()
-	#This should always occur last
+	movementCount = 0
+	screen.blit(cityimg,(0,200))
+	screen.blit(cityimg2,(150,130))
+	screen.blit(cityimg,(670,200))
+	
+
+	viewRender()
+
 	if(fireToggle == 0):
 		screen.blit(Handgun1Img,(gunX,gunY))
 	elif(fireToggle == 1):
 		screen.blit(Handgun2Img,(gunX,gunY))
 		screen.blit(Handgun3Img,(gunX,gunY))
+
+
+
 	pygame.display.flip()
