@@ -29,13 +29,13 @@ gunShot1Effect = pygame.mixer.Sound('gunShot.wav')
 gunShot2Effect = pygame.mixer.Sound('gunShot_2.wav')
 impactEffect = pygame.mixer.Sound("bulletImpact.wav")
 wallsprite = pygame.image.load("WallLeft.png")
-wallsprite2 = pygame.image.load("WallRight.png")
+wallsprite2 = pygame.image.load("stoneWall.png")
 cityimg = pygame.image.load("buildings-bg.png")
 cityimg2 = pygame.image.load("near-buildings-bg.png")
 drawEntitites = []
 drawBuildings = []
 done = False
-renderDis = 4
+renderDis = 5
 fireToggle = 0
 PlayerOrientation = 1
 PlayerPos = 28
@@ -45,13 +45,13 @@ enemyPos2 = 21
 enemyPos3 = 29
 enemyPos4 = 0
 levelMap = [4,4,4,4,4,4,4,4,4,4,4,4,4,4,
-			4,3,3,3,3,3,0,0,0,0,0,0,0,4,
-			4,3,0,0,0,3,0,0,0,0,0,0,0,4,
-			4,3,0,0,0,3,0,0,0,0,0,0,0,4,
-			4,3,3,3,0,3,0,0,0,0,0,0,0,4,
-			4,0,0,3,0,3,0,0,0,0,0,0,0,4,
-			4,0,0,3,0,3,0,0,0,0,0,0,0,4,
-			4,0,0,0,0,0,0,0,0,0,0,0,0,4,
+			4,6,6,6,6,6,0,0,0,0,0,0,0,4,
+			4,6,0,0,0,6,0,0,0,0,0,0,0,4,
+			4,6,0,0,0,6,0,0,0,0,0,0,0,4,
+			4,6,6,6,0,6,0,0,0,0,0,0,0,4,
+			4,6,6,6,0,6,0,0,0,0,0,0,0,4,
+			4,0,0,6,0,6,6,0,0,0,0,0,0,4,
+			4,0,0,0,0,0,6,0,0,0,0,0,0,4,
 			4,0,0,0,3,0,3,3,0,0,0,0,0,4,
 			4,0,0,0,3,1,0,3,0,0,0,0,0,4,
 			4,0,0,0,3,0,0,3,0,0,0,0,0,4,
@@ -96,6 +96,9 @@ def collisionDetection(pos,movement):
 	elif(levelMap[pos] == 3):
 		PlayerPos += movement
 		print("Collision")
+	elif(levelMap[pos] == 6):
+		PlayerPos += movement
+		print("Collision")
 
 
 
@@ -120,6 +123,16 @@ def envRender():
 								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
 							elif(j == -1):
 								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+						elif(tile == 6):
+							x = 300
+							y = round((500/i)+50*i)
+							sprite = pygame.transform.scale(wallsprite2,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+							elif(j == 1):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+							elif(j == -1):
+								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
 	if(PlayerOrientation == 2):
 		for i in range(1,renderDis):
 			pos = [0,levelD,-levelD]
@@ -132,6 +145,16 @@ def envRender():
 							x = 300
 							y = round((500/i)+50*i)
 							sprite = pygame.transform.scale(wallsprite,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+							elif(j == levelD):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+							elif(j == -levelD):
+								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+						elif(tile == 6):
+							x = 300
+							y = round((500/i)+50*i)
+							sprite = pygame.transform.scale(wallsprite2,(x,y))
 							if(j == 0):
 								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
 							elif(j == levelD):
@@ -157,6 +180,16 @@ def envRender():
 								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
 							elif(j == 1):
 								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+						elif(tile == 6):
+							x = 300
+							y = round((500/i)+50*i)
+							sprite = pygame.transform.scale(wallsprite2,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+							elif(j == -1):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+							elif(j == 1):
+								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
 
 	if(PlayerOrientation == 4):
 		for i in range(1,renderDis):
@@ -170,6 +203,16 @@ def envRender():
 							x = 300
 							y = round((500/i)+50*i)
 							sprite = pygame.transform.scale(wallsprite,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+							elif(j == -levelD):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+							elif(j == levelD):
+								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+						elif(tile == 6):
+							x = 300
+							y = round((500/i)+50*i)
+							sprite = pygame.transform.scale(wallsprite2,(x,y))
 							if(j == 0):
 								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
 							elif(j == -levelD):
