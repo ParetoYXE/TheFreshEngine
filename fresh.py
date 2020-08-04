@@ -12,6 +12,8 @@ class Background(pygame.sprite.Sprite):
 Handgun1Img = pygame.image.load("Handgun1.png")
 Handgun2Img = pygame.image.load("Handgun2.png")
 Handgun3Img = pygame.image.load("Handgun3.png")
+Shotgun1Img = pygame.image.load("shotgun1.png")
+Shotgun2Img = pygame.image.load("shotgun2.png")
 BackGround3 = Background('HandGun3.png',[0,0])
 demonImg = pygame.image.load("Demon.png")
 demonDeath = pygame.image.load("demonDeath.png")
@@ -27,15 +29,18 @@ height = 600
 screen = pygame.display.set_mode((width, height))
 gunShot1Effect = pygame.mixer.Sound('gunShot.wav')
 gunShot2Effect = pygame.mixer.Sound('gunShot_2.wav')
+gunShotShotgunEffect = pygame.mixer.Sound('shotgun.wav')
 impactEffect = pygame.mixer.Sound("bulletImpact.wav")
 wallsprite = pygame.image.load("WallLeft.png")
 wallsprite2 = pygame.image.load("stoneWall.png")
+wallsprite3 = pygame.image.load('WallRight.png')
 cityimg = pygame.image.load("buildings-bg.png")
 cityimg2 = pygame.image.load("near-buildings-bg.png")
+tableimg = pygame.image.load("table.png")
 drawEntitites = []
 drawBuildings = []
 done = False
-renderDis = 5
+renderDis = 4
 fireToggle = 0
 PlayerOrientation = 1
 PlayerPos = 28
@@ -45,20 +50,22 @@ enemyPos2 = 21
 enemyPos3 = 29
 enemyPos4 = 0
 levelMap = [4,4,4,4,4,4,4,4,4,4,4,4,4,4,
-			4,6,6,6,6,6,0,0,0,0,0,0,0,4,
-			4,6,0,0,0,6,0,0,0,0,0,0,0,4,
-			4,6,0,0,0,6,0,0,0,0,0,0,0,4,
+			4,5,5,5,5,5,0,0,0,0,0,0,0,4,
+			4,5,0,7,0,5,0,0,0,0,0,0,0,4,
+			4,6,0,0,0,5,0,0,0,0,0,0,0,4,
 			4,6,6,6,0,6,0,0,0,0,0,0,0,4,
 			4,6,6,6,0,6,0,0,0,0,0,0,0,4,
 			4,0,0,6,0,6,6,0,0,0,0,0,0,4,
-			4,0,0,0,0,0,6,0,0,0,0,0,0,4,
-			4,0,0,0,3,0,3,3,0,0,0,0,0,4,
-			4,0,0,0,3,1,0,3,0,0,0,0,0,4,
-			4,0,0,0,3,0,0,3,0,0,0,0,0,4,
-			4,0,0,0,3,3,3,3,0,0,0,0,0,4,
-			4,0,0,0,0,0,0,0,0,0,0,0,0,4,
+			4,0,0,6,0,0,6,0,0,0,3,0,3,4,
+			4,0,0,6,3,7,5,5,0,0,3,0,3,4,
+			4,0,0,0,3,1,0,3,5,5,5,0,3,4,
+			4,0,0,0,5,0,0,0,0,0,0,0,3,4,
+			4,0,0,0,5,5,3,3,0,0,0,0,3,4,
+			4,0,0,0,0,0,0,3,3,3,3,3,3,4,
 			4,4,4,4,4,4,4,4,4,4,4,4,4,4,]
 found = 0
+
+weaponToggle = True
 for i in range(len(levelMap)):
 	if levelMap[i] == 1:
 		PlayerPos = i
@@ -99,12 +106,16 @@ def collisionDetection(pos,movement):
 	elif(levelMap[pos] == 6):
 		PlayerPos += movement
 		print("Collision")
+	elif(levelMap[pos] == 5):
+		PlayerPos += movement
+		print("Collision")
 
 
 
 def envRender():
 	global wallsprite, wallsprite2
 	renderStack = []
+	count = 0
 	if(PlayerOrientation == 1):
 		for i in range(1,renderDis):
 			pos = [0,1,-1]
@@ -113,10 +124,14 @@ def envRender():
 				if(index < len(levelMap)):
 					if(index > 0):
 						tile = levelMap[index]
-						if(tile == 3):
+						if(tile == 3 or tile == 5):
+							count +=1
 							x = 300
 							y = round((500/i)+50*i)
-							sprite = pygame.transform.scale(wallsprite,(x,y))
+							if(tile == 3):
+								sprite = pygame.transform.scale(wallsprite,(x,y))
+							elif(tile == 5):
+								sprite = pygame.transform.scale(wallsprite3,(x,y))
 							if(j == 0):
 								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
 							elif(j == 1):
@@ -124,6 +139,7 @@ def envRender():
 							elif(j == -1):
 								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
 						elif(tile == 6):
+							count +=1
 							x = 300
 							y = round((500/i)+50*i)
 							sprite = pygame.transform.scale(wallsprite2,(x,y))
@@ -133,6 +149,29 @@ def envRender():
 								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
 							elif(j == -1):
 								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+						elif(tile == 7):
+							x = 300
+							y = round((300/i)+50*i)
+							sprite = pygame.transform.scale(tableimg,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":200})
+							elif(j == 1):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":200})
+							elif(j == -1):
+								renderStack.append({"sprite":sprite,"x":0,"y":200})
+			if(count == 1):
+				k = len(renderStack)
+				print(renderStack[k-1]["sprite"])
+				if(renderStack[k-1]["x"] == width /3):
+					print("center no change")
+				elif(renderStack[k-1]["x"] == 2*(width/3)):
+					renderStack[k-1]["x"] = width - 10
+					renderStack[k-1]["sprite"] =  pygame.transform.scale(sprite,(10,y))
+				elif(renderStack[k-1]["x"]==0):
+					renderStack[k-1]["sprite"] =  pygame.transform.scale(sprite,(10,y))
+			print("Count: " + str(count))
+			count = 0
+
 	if(PlayerOrientation == 2):
 		for i in range(1,renderDis):
 			pos = [0,levelD,-levelD]
@@ -141,10 +180,14 @@ def envRender():
 				if(index < len(levelMap)):
 					if(index > 0):
 						tile = levelMap[index]
-						if(tile == 3):
+						if(tile == 3 or tile == 5):
+							count +=1
 							x = 300
 							y = round((500/i)+50*i)
-							sprite = pygame.transform.scale(wallsprite,(x,y))
+							if(tile == 3):
+								sprite = pygame.transform.scale(wallsprite,(x,y))
+							elif(tile == 5):
+								sprite = pygame.transform.scale(wallsprite3,(x,y))
 							if(j == 0):
 								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
 							elif(j == levelD):
@@ -152,6 +195,7 @@ def envRender():
 							elif(j == -levelD):
 								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
 						elif(tile == 6):
+							count +=1
 							x = 300
 							y = round((500/i)+50*i)
 							sprite = pygame.transform.scale(wallsprite2,(x,y))
@@ -161,7 +205,28 @@ def envRender():
 								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
 							elif(j == -levelD):
 								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
-
+						elif(tile == 7):
+							x = 300
+							y = round((300/i)+50*i)
+							sprite = pygame.transform.scale(tableimg,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":200})
+							elif(j == levelD):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":200})
+							elif(j == -levelD):
+								renderStack.append({"sprite":sprite,"x":0,"y":200})
+			if(count == 1):
+				k = len(renderStack)
+				print(renderStack[k-1]["sprite"])
+				if(renderStack[k-1]["x"] == width /3):
+					print("center no change")
+				elif(renderStack[k-1]["x"] == 2*(width/3)):
+					renderStack[k-1]["x"] = width - 10
+					renderStack[k-1]["sprite"] =  pygame.transform.scale(sprite,(10,y))
+				elif(renderStack[k-1]["x"]==0):
+					renderStack[k-1]["sprite"] =  pygame.transform.scale(sprite,(10,y))
+			print("Count: " + str(count))
+			count = 0
 	if(PlayerOrientation == 3):
 		for i in range(1,renderDis):
 			pos = [0,1,-1]
@@ -170,10 +235,14 @@ def envRender():
 				if(index < len(levelMap)):
 					if(index > 0):
 						tile = levelMap[index]
-						if(tile == 3):
+						if(tile == 3 or tile == 5):
+							count +=1
 							x = 300
 							y = round((500/i)+50*i)
-							sprite = pygame.transform.scale(wallsprite,(x,y))
+							if(tile == 3):
+								sprite = pygame.transform.scale(wallsprite,(x,y))
+							elif(tile == 5):
+								sprite = pygame.transform.scale(wallsprite3,(x,y))
 							if(j == 0):
 								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
 							elif(j == -1):
@@ -181,6 +250,7 @@ def envRender():
 							elif(j == 1):
 								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
 						elif(tile == 6):
+							count +=1
 							x = 300
 							y = round((500/i)+50*i)
 							sprite = pygame.transform.scale(wallsprite2,(x,y))
@@ -190,7 +260,28 @@ def envRender():
 								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
 							elif(j == 1):
 								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
-
+						elif(tile == 7):
+							x = 300
+							y = round((300/i)+50*i)
+							sprite = pygame.transform.scale(tableimg,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":200})
+							elif(j == -1):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":200})
+							elif(j == 1):
+								renderStack.append({"sprite":sprite,"x":0,"y":200})
+			if(count == 1):
+				k = len(renderStack)
+				print(renderStack[k-1]["sprite"])
+				if(renderStack[k-1]["x"] == width /3):
+					print("center no change")
+				elif(renderStack[k-1]["x"] == 2*(width/3)):
+					renderStack[k-1]["x"] = width - 10
+					renderStack[k-1]["sprite"] =  pygame.transform.scale(sprite,(10,y))
+				elif(renderStack[k-1]["x"]==0):
+					renderStack[k-1]["sprite"] =  pygame.transform.scale(sprite,(10,y))
+			print("Count: " + str(count))
+			count = 0
 	if(PlayerOrientation == 4):
 		for i in range(1,renderDis):
 			pos = [0,levelD,-levelD]
@@ -199,10 +290,14 @@ def envRender():
 				if(index < len(levelMap)):
 					if(index > 0):
 						tile = levelMap[index]
-						if(tile == 3):
+						if(tile == 3 or tile == 5):
+							count +=1
 							x = 300
 							y = round((500/i)+50*i)
-							sprite = pygame.transform.scale(wallsprite,(x,y))
+							if(tile == 3):
+								sprite = pygame.transform.scale(wallsprite,(x,y))
+							elif(tile == 5):
+								sprite = pygame.transform.scale(wallsprite3,(x,y))
 							if(j == 0):
 								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
 							elif(j == -levelD):
@@ -210,6 +305,7 @@ def envRender():
 							elif(j == levelD):
 								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
 						elif(tile == 6):
+							count +=1
 							x = 300
 							y = round((500/i)+50*i)
 							sprite = pygame.transform.scale(wallsprite2,(x,y))
@@ -219,9 +315,28 @@ def envRender():
 								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
 							elif(j == levelD):
 								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
-
-				
-
+						elif(tile == 7):
+							x = 300
+							y = round((300/i)+50*i)
+							sprite = pygame.transform.scale(tableimg,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":200})
+							elif(j == -levelD):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":200})
+							elif(j == levelD):
+								renderStack.append({"sprite":sprite,"x":0,"y":200})
+			if(count == 1):
+				k = len(renderStack)
+				print(renderStack[k-1]["sprite"])
+				if(renderStack[k-1]["x"] == width /3):
+					print("center no change")
+				elif(renderStack[k-1]["x"] == 2*(width/3)):
+					renderStack[k-1]["x"] = width - 10
+					renderStack[k-1]["sprite"] =  pygame.transform.scale(sprite,(10,y))
+				elif(renderStack[k-1]["x"]==0):
+					renderStack[k-1]["sprite"] =  pygame.transform.scale(sprite,(10,y))
+			print("Count: " + str(count))
+			count = 0
 	renderStack = renderStack[::-1]
 	for i in renderStack:
 		screen.blit(i["sprite"],(i["x"],i["y"]))
@@ -289,6 +404,8 @@ while not done:
 						PlayerOrientation = 4
 					elif(PlayerOrientation == 4):
 						PlayerOrientation = 1
+				if event.key == pygame.K_TAB:
+					weaponToggle = not weaponToggle
 				print(PlayerOrientation)
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				pos = pygame.mouse.get_pos()
@@ -298,7 +415,11 @@ while not done:
 					gunX += 10
 				if(fireToggle == 0):
 					fireToggle = 1
-					gunShot2Effect.play()
+					if(weaponToggle):
+						gunShotShotgunEffect.play()
+					else:
+						gunShot2Effect.play()
+
 			if event.type == pygame.MOUSEBUTTONUP:
 				fireToggle = 0
 	
@@ -310,14 +431,20 @@ while not done:
 	screen.blit(cityimg,(670,200))
 	
 
-	
+		
 	envRender()
 
 	if(fireToggle == 0):
-		screen.blit(Handgun1Img,(gunX,gunY))
+		if(weaponToggle):
+			screen.blit(Shotgun1Img,(gunX,gunY))
+		else:
+			screen.blit(Handgun1Img,(gunX,gunY))
 	elif(fireToggle == 1):
-		screen.blit(Handgun2Img,(gunX,gunY))
-		screen.blit(Handgun3Img,(gunX,gunY))
+		if(weaponToggle):
+			screen.blit(Shotgun2Img,(gunX,gunY))
+		else:
+			screen.blit(Handgun2Img,(gunX,gunY))
+			screen.blit(Handgun3Img,(gunX,gunY))
 
 
 
