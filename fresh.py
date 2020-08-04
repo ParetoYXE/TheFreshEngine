@@ -37,24 +37,41 @@ drawBuildings = []
 done = False
 renderDis = 4
 fireToggle = 0
-PlayerOrientation = 2
-PlayerPos = 27
-levelD = 5
-enemyPos = 21
-enemyPos2 = 22
-enemyPos3 = 23
-levelMap = [0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0,
-			0,0,0,0,0,0,0]
-
-levelMap[PlayerPos] = 1
-levelMap[enemyPos] = 2
-levelMap[enemyPos2] = 2
-levelMap[enemyPos3] = 2
+PlayerOrientation = 1
+PlayerPos = 28
+levelD = 14
+enemyPos = 27
+enemyPos2 = 21
+enemyPos3 = 29
+enemyPos4 = 0
+levelMap = [4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+			4,3,3,3,3,3,0,0,0,0,0,0,0,4,
+			4,3,0,0,0,3,0,0,0,0,0,0,0,4,
+			4,3,0,0,0,3,0,0,0,0,0,0,0,4,
+			4,3,3,3,0,3,0,0,0,0,0,0,0,4,
+			4,0,0,3,0,3,0,0,0,0,0,0,0,4,
+			4,0,0,3,0,3,0,0,0,0,0,0,0,4,
+			4,0,0,0,0,0,0,0,0,0,0,0,0,4,
+			4,0,0,0,3,0,3,3,0,0,0,0,0,4,
+			4,0,0,0,3,1,0,3,0,0,0,0,0,4,
+			4,0,0,0,3,0,0,3,0,0,0,0,0,4,
+			4,0,0,0,3,3,3,3,0,0,0,0,0,4,
+			4,0,0,0,0,0,0,0,0,0,0,0,0,4,
+			4,4,4,4,4,4,4,4,4,4,4,4,4,4,]
+found = 0
+for i in range(len(levelMap)):
+	if levelMap[i] == 1:
+		PlayerPos = i
+	elif(levelMap[i] == 2):
+		if(found == 0):
+			enemyPos = i
+		elif(found == 1):
+			enemyPos2 = i
+		elif(found == 2):
+			enemyPos3 = i
+		elif(found == 3):
+			enemyPos4 = i
+		found+=1
 
 
 count = 0
@@ -71,57 +88,101 @@ movementCount = 0
 
 playerScale = 1
 
-def viewRender():
-	global demonImg
-	global PlayerOrientation
-	if(PlayerOrientation == 1): 
-		for i in range(1,renderDis):
-			if(PlayerPos - i*levelD > 0):
-				tile = levelMap[PlayerPos - (i*levelD)]
-				if(tile > 0):
-					x = round(300 / i)
-					y = round(200 / i)
-					demonImg = pygame.transform.scale(demonImg,(x,y))
-					screen.blit(demonImg,(width/2 - 50,height/2))
-			if(((PlayerPos - i*levelD) - 1) > 0):
-				tile = levelMap[PlayerPos - (i*levelD) - 1]
-				if(tile > 0):
-					x = round(300 / i)
-					y = round(200 / i)
-					demonImg = pygame.transform.scale(demonImg,(x,y))
-					screen.blit(demonImg,(0,height/2))
-			if(((PlayerPos - i*levelD) + 1) > 0):
-				tile = levelMap[PlayerPos - (i*levelD) + 1]
-				if(tile > 0):
-					x = round(300 / i)
-					y = round(200 / i)
-					demonImg = pygame.transform.scale(demonImg,(x,y))
-					screen.blit(demonImg,(width*0.75,height/2))
-	if(PlayerOrientation == 2): 
-		for i in range(1,renderDis):
-			if(PlayerPos + i > 0):
-				tile = levelMap[PlayerPos + i]
-				if(tile > 0):
-					x = round(300 / i)
-					y = round(200 / i)
-					demonImg = pygame.transform.scale(demonImg,(x,y))
-					screen.blit(demonImg,(width/2 - 50,height/2))
-			if(((PlayerPos + i) - levelD) > 0):
-				tile = levelMap[PlayerPos + i - levelD]
-				if(tile > 0):
-					x = round(300 / i)
-					y = round(200 / i)
-					demonImg = pygame.transform.scale(demonImg,(x,y))
-					screen.blit(demonImg,(0,height/2))
-			if(((PlayerPos + i) + levelD) > 0):
-				tile = levelMap[PlayerPos + i + levelD]
-				if(tile > 0):
-					x = round(300 / i)
-					y = round(200 / i)
-					demonImg = pygame.transform.scale(demonImg,(x,y))
-					screen.blit(demonImg,(width*0.75,height/2))
+def collisionDetection(pos,movement):
+	global PlayerPos
+	if(levelMap[pos] == 4):
+		PlayerPos += movement
+		print("Collision")
+	elif(levelMap[pos] == 3):
+		PlayerPos += movement
+		print("Collision")
 
 
+
+def envRender():
+	global wallsprite, wallsprite2
+	renderStack = []
+	if(PlayerOrientation == 1):
+		for i in range(1,renderDis):
+			pos = [0,1,-1]
+			for j in pos:
+				index = (PlayerPos - (i*levelD)) + j
+				if(index < len(levelMap)):
+					if(index > 0):
+						tile = levelMap[index]
+						if(tile == 3):
+							x = 300
+							y = round((500/i)+50*i)
+							sprite = pygame.transform.scale(wallsprite,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+							elif(j == 1):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+							elif(j == -1):
+								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+	if(PlayerOrientation == 2):
+		for i in range(1,renderDis):
+			pos = [0,levelD,-levelD]
+			for j in pos:
+				index = (PlayerPos + 1 * i) + j
+				if(index < len(levelMap)):
+					if(index > 0):
+						tile = levelMap[index]
+						if(tile == 3):
+							x = 300
+							y = round((500/i)+50*i)
+							sprite = pygame.transform.scale(wallsprite,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+							elif(j == levelD):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+							elif(j == -levelD):
+								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+
+	if(PlayerOrientation == 3):
+		for i in range(1,renderDis):
+			pos = [0,1,-1]
+			for j in pos:
+				index = (PlayerPos + (i*levelD)) + j
+				if(index < len(levelMap)):
+					if(index > 0):
+						tile = levelMap[index]
+						if(tile == 3):
+							x = 300
+							y = round((500/i)+50*i)
+							sprite = pygame.transform.scale(wallsprite,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+							elif(j == -1):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+							elif(j == 1):
+								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+
+	if(PlayerOrientation == 4):
+		for i in range(1,renderDis):
+			pos = [0,levelD,-levelD]
+			for j in pos:
+				index = (PlayerPos - 1 * i) + j
+				if(index < len(levelMap)):
+					if(index > 0):
+						tile = levelMap[index]
+						if(tile == 3):
+							x = 300
+							y = round((500/i)+50*i)
+							sprite = pygame.transform.scale(wallsprite,(x,y))
+							if(j == 0):
+								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+							elif(j == -levelD):
+								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+							elif(j == levelD):
+								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+
+				
+
+	renderStack = renderStack[::-1]
+	for i in renderStack:
+		screen.blit(i["sprite"],(i["x"],i["y"]))
+						
 
 
 timer = pygame.time.get_ticks()
@@ -136,17 +197,17 @@ while not done:
 	if pygame.time.get_ticks()-timer > 1000:
 	    timer = pygame.time.get_ticks()
 	    #do something every 1.0 seconds
-	    levelMap[enemyPos] = 0
-	    enemyPos+=levelD
-	    levelMap[enemyPos] = 2
+	    #levelMap[enemyPos] = 0
+	    #enemyPos+=levelD
+	    #levelMap[enemyPos] = 2
 
-	    levelMap[enemyPos2] = 0
-	    enemyPos2+=levelD
-	    levelMap[enemyPos2] = 2
+	    #levelMap[enemyPos2] = 0
+	    #enemyPos2+=levelD
+	    #levelMap[enemyPos2] = 2
 
-	    levelMap[enemyPos3] = 0
-	    enemyPos3+=levelD
-	    levelMap[enemyPos3] = 2
+	    #levelMap[enemyPos3] = 0
+	    #enemyPos3+=levelD
+	    #levelMap[enemyPos3] = 2
 	for event in pygame.event.get():
 
 			if event.type == pygame.QUIT:
@@ -155,9 +216,37 @@ while not done:
 				if event.key == pygame.K_w:
 					if(PlayerOrientation == 1):
 						PlayerPos -= levelD
-						print(PlayerPos)
+						collisionDetection(PlayerPos,levelD)
+					elif(PlayerOrientation == 2):
+						PlayerPos +=1
+						collisionDetection(PlayerPos,-1)
+					elif(PlayerOrientation == 3):
+						PlayerPos += levelD
+						collisionDetection(PlayerPos,-levelD)
+					elif(PlayerOrientation == 4):
+						PlayerPos -= 1
+						collisionDetection(PlayerPos,1)
+
+					print("PlayerPos: " + str(PlayerPos))
 				if event.key == pygame.K_a:
-					PlayerOrientation = 1
+					if(PlayerOrientation == 1):
+						PlayerOrientation = 4
+					elif(PlayerOrientation == 4):
+						PlayerOrientation = 3
+					elif(PlayerOrientation == 3):
+						PlayerOrientation = 2
+					elif(PlayerOrientation == 2):
+						PlayerOrientation = 1
+				if event.key == pygame.K_d:
+					if(PlayerOrientation == 1):
+						PlayerOrientation = 2
+					elif(PlayerOrientation == 2):
+						PlayerOrientation = 3
+					elif(PlayerOrientation == 3):
+						PlayerOrientation = 4
+					elif(PlayerOrientation == 4):
+						PlayerOrientation = 1
+				print(PlayerOrientation)
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				pos = pygame.mouse.get_pos()
 				if(pos[0] < gunX):
@@ -178,7 +267,8 @@ while not done:
 	screen.blit(cityimg,(670,200))
 	
 
-	viewRender()
+	
+	envRender()
 
 	if(fireToggle == 0):
 		screen.blit(Handgun1Img,(gunX,gunY))
