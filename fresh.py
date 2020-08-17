@@ -37,32 +37,34 @@ wallsprite3 = pygame.image.load('WallRight.png')
 cityimg = pygame.image.load("buildings-bg.png")
 cityimg2 = pygame.image.load("near-buildings-bg.png")
 tableimg = pygame.image.load("table.png")
+barrelImg = pygame.image.load("barrel.png")
 drawEntitites = []
 drawBuildings = []
 done = False
-renderDis = 4
+renderDis = 5
 fireToggle = 0
 PlayerOrientation = 1
 PlayerPos = 28
-levelD = 14
+levelD = 15
 enemyPos = 27
 enemyPos2 = 21
 enemyPos3 = 29
 enemyPos4 = 0
-levelMap = [4,4,4,4,4,4,4,4,4,4,4,4,4,4,
-			4,5,5,5,5,5,0,0,0,0,0,0,0,4,
-			4,5,0,7,0,5,0,0,0,0,0,0,0,4,
-			4,6,0,0,0,5,0,0,0,0,0,0,0,4,
-			4,6,6,6,0,6,0,0,0,0,0,0,0,4,
-			4,6,6,6,0,6,0,0,0,0,0,0,0,4,
-			4,0,0,6,0,6,6,0,0,0,0,0,0,4,
-			4,0,0,6,0,0,6,0,0,0,3,0,3,4,
-			4,0,0,6,3,7,5,5,0,0,3,0,3,4,
-			4,0,0,0,3,1,0,3,5,5,5,0,3,4,
-			4,0,0,0,5,0,0,0,0,0,0,0,3,4,
-			4,0,0,0,5,5,3,3,0,0,0,0,3,4,
-			4,0,0,0,0,0,0,3,3,3,3,3,3,4,
-			4,4,4,4,4,4,4,4,4,4,4,4,4,4,]
+levelMap = [4, 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4,
+			4, 5 , 5 , 5 , 5 , 5 , 0 , 0 , 6 , 6 , 6 , 5 , 5 , 5 , 4,
+			4, 5 ,'D','D', 8 , 5 , 0 , 0 , 6 , 0 , 0 , 0 , 0 , 5 , 4,
+			4, 6 , 0 , 0 , 0 , 5 , 0 , 0 , 6 , 0 , 0 , 0 , 0 , 5 , 4,
+			4, 6 , 6 , 6 , 0 , 6 , 0 , 0 , 6 , 0 , 0 , 0 , 0 , 5 , 4,
+			4, 6 , 6 , 6 , 0 , 6 , 0 , 0 , 5 , 0 , 0 , 0 , 0 , 5 , 4,
+			4, 0 , 0 , 6 , 0 , 6 , 6 , 0 , 5 , 5 , 5 , 0 , 5 , 5 , 4,
+			4, 0 , 0 , 6 , 0 ,'D', 6 , 0 , 0 , 0 , 3 , 0 , 3 , 4 , 4,
+			4, 0 , 0 , 6 , 3 , 7 , 5 , 5 , 0 , 0 , 3 , 0 , 3 , 4 , 4,
+			4, 0 , 0 , 0 , 3 , 1 , 0 , 3 , 5 , 5 , 5 , 0 , 3 , 4 , 4,
+			4, 0 , 0 , 0 , 5 ,'D','D','D', 0 ,'D', 0 , 0 , 3 , 4 , 4,
+			4, 0 , 0 , 0 , 5 , 5 , 3 , 3 , 0 ,'D', 0 , 0 , 3 , 4 , 4,
+			4, 0 , 0 , 0 , 0 , 0 , 0 , 3 , 3 , 3 , 3 , 3 , 3 , 4 , 4,
+			4, 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4,
+			4, 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4 , 4]
 found = 0
 
 weaponToggle = True
@@ -91,9 +93,13 @@ gunX = 600
 gunY = 500
 
 movementCount = 0
-
+renderStack = []
 
 playerScale = 1
+
+def drawFloor():
+	renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":0+renderDis*25})
+
 
 def collisionDetection(pos,movement):
 	global PlayerPos
@@ -111,9 +117,14 @@ def collisionDetection(pos,movement):
 		print("Collision")
 
 
-
+def hitScan(x,y):
+	for i in renderStack:
+		if(i["name"]=='D'):
+			if(i["x"]<=x<=i["x"]+300):
+				if(i["y"]<=y<=i["y"]+200):
+					levelMap[i["index"]] = 0
 def envRender():
-	global wallsprite, wallsprite2
+	global wallsprite, wallsprite2, renderStack
 	renderStack = []
 	count = 0
 	if(PlayerOrientation == 1):
@@ -127,38 +138,62 @@ def envRender():
 						if(tile == 3 or tile == 5):
 							count +=1
 							x = 300
-							y = round((500/i)+50*i)
+							y = 425 - (i-1)*70
+							if(j == 0):
+								x+= (5 - i) * 30
 							if(tile == 3):
 								sprite = pygame.transform.scale(wallsprite,(x,y))
 							elif(tile == 5):
 								sprite = pygame.transform.scale(wallsprite3,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":0+renderDis*25})
 							elif(j == 1):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":0+renderDis*25})
 							elif(j == -1):
-								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":0+renderDis*25})
 						elif(tile == 6):
 							count +=1
 							x = 300
-							y = round((500/i)+50*i)
+							y = 425 - (i-1)*70
+							if(j == 0):
+								x+= (5 - i) * 30
 							sprite = pygame.transform.scale(wallsprite2,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":0+renderDis*25})
 							elif(j == 1):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":0+renderDis*25})
 							elif(j == -1):
-								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":0+renderDis*25})
 						elif(tile == 7):
 							x = 300
 							y = round((300/i)+50*i)
 							sprite = pygame.transform.scale(tableimg,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":200})
 							elif(j == 1):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":200})
 							elif(j == -1):
-								renderStack.append({"sprite":sprite,"x":0,"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":200})
+						elif(tile == 8):
+							x = 69
+							y = round((89/i)+50*i)
+							sprite = pygame.transform.scale(barrelImg,(x,y))
+							if(j == 0):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15+70,"y":300})
+							elif(j == 1):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3)+70,"y":300})
+							elif(j == -1):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0+70,"y":300})
+						elif(tile == 'D'):
+							x = 200
+							y = round((300/i))
+							sprite = pygame.transform.scale(demonImg,(x,y))
+							if(j == 0):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15+70,"y":300})
+							elif(j == 1):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3)+70,"y":300})
+							elif(j == -1):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0+70,"y":300})
 			if(count == 1):
 				k = len(renderStack)
 				print(renderStack[k-1]["sprite"])
@@ -183,38 +218,62 @@ def envRender():
 						if(tile == 3 or tile == 5):
 							count +=1
 							x = 300
-							y = round((500/i)+50*i)
+							y = 425 - (i-1)*70
+							if(j == 0):
+								x+= (5 - i) * 30
 							if(tile == 3):
 								sprite = pygame.transform.scale(wallsprite,(x,y))
 							elif(tile == 5):
 								sprite = pygame.transform.scale(wallsprite3,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":0+renderDis*25})
 							elif(j == levelD):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":0+renderDis*25})
 							elif(j == -levelD):
-								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":0+renderDis*25})
 						elif(tile == 6):
 							count +=1
 							x = 300
-							y = round((500/i)+50*i)
+							y = 425 - (i-1)*70
+							if(j == 0):
+								x+= (5 - i) * 30
 							sprite = pygame.transform.scale(wallsprite2,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":0+renderDis*25})
 							elif(j == levelD):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":0+renderDis*25})
 							elif(j == -levelD):
-								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":0+renderDis*25})
 						elif(tile == 7):
 							x = 300
 							y = round((300/i)+50*i)
 							sprite = pygame.transform.scale(tableimg,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":200})
 							elif(j == levelD):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":200})
 							elif(j == -levelD):
-								renderStack.append({"sprite":sprite,"x":0,"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":200})
+						elif(tile == 8):
+							x = 69
+							y = round((89/i)+50*i)
+							sprite = pygame.transform.scale(barrelImg,(x,y))
+							if(j == 0):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15+70,"y":300})
+							elif(j == levelD):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3)+70,"y":300})
+							elif(j == -levelD):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0+70,"y":300})
+						elif(tile == 'D'):
+							x = 200
+							y = round((300/i))
+							sprite = pygame.transform.scale(demonImg,(x,y))
+							if(j == 0):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15+70,"y":300})
+							elif(j == 1):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3)+70,"y":300})
+							elif(j == -1):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0+70,"y":300})
 			if(count == 1):
 				k = len(renderStack)
 				print(renderStack[k-1]["sprite"])
@@ -238,38 +297,62 @@ def envRender():
 						if(tile == 3 or tile == 5):
 							count +=1
 							x = 300
-							y = round((500/i)+50*i)
+							y = 425 - (i-1)*70
+							if(j == 0):
+								x+= (5 - i) * 30
 							if(tile == 3):
 								sprite = pygame.transform.scale(wallsprite,(x,y))
 							elif(tile == 5):
 								sprite = pygame.transform.scale(wallsprite3,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":0+renderDis*25})
 							elif(j == -1):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":0+renderDis*25})
 							elif(j == 1):
-								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":0+renderDis*25})
 						elif(tile == 6):
 							count +=1
 							x = 300
-							y = round((500/i)+50*i)
+							y = 425 - (i-1)*70
+							if(j == 0):
+								x+= (5 - i) * 30
 							sprite = pygame.transform.scale(wallsprite2,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":0+renderDis*25})
 							elif(j == -1):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":0+renderDis*25})
 							elif(j == 1):
-								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":0+renderDis*25})
 						elif(tile == 7):
 							x = 300
 							y = round((300/i)+50*i)
 							sprite = pygame.transform.scale(tableimg,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":200})
 							elif(j == -1):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":200})
 							elif(j == 1):
-								renderStack.append({"sprite":sprite,"x":0,"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":200})
+						elif(tile == 8):
+							x = 69
+							y = round((89/i)+50*i)
+							sprite = pygame.transform.scale(barrelImg,(x,y))
+							if(j == 0):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15+70,"y":300})
+							elif(j == levelD):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3)+70,"y":300})
+							elif(j == -levelD):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0+70,"y":300})
+						elif(tile == 'D'):
+							x = 200
+							y = round((300/i))
+							sprite = pygame.transform.scale(demonImg,(x,y))
+							if(j == 0):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15+70,"y":300})
+							elif(j == 1):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3)+70,"y":300})
+							elif(j == -1):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0+70,"y":300})
 			if(count == 1):
 				k = len(renderStack)
 				print(renderStack[k-1]["sprite"])
@@ -293,38 +376,62 @@ def envRender():
 						if(tile == 3 or tile == 5):
 							count +=1
 							x = 300
-							y = round((500/i)+50*i)
+							y = 425 - (i-1)*70
+							if(j == 0):
+								x+= (5 - i) * 30
 							if(tile == 3):
 								sprite = pygame.transform.scale(wallsprite,(x,y))
 							elif(tile == 5):
 								sprite = pygame.transform.scale(wallsprite3,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":0+renderDis*25})
 							elif(j == -levelD):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":0+renderDis*25})
 							elif(j == levelD):
-								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":0+renderDis*25})
 						elif(tile == 6):
 							count +=1
 							x = 300
-							y = round((500/i)+50*i)
+							y = 425 - (i-1)*70
+							if(j == 0):
+								x+= (5 - i) * 30
 							sprite = pygame.transform.scale(wallsprite2,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":0+renderDis*25})
 							elif(j == -levelD):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":0+renderDis*25})
 							elif(j == levelD):
-								renderStack.append({"sprite":sprite,"x":0,"y":0+i*25})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":0+renderDis*25})
 						elif(tile == 7):
 							x = 300
 							y = round((300/i)+50*i)
 							sprite = pygame.transform.scale(tableimg,(x,y))
 							if(j == 0):
-								renderStack.append({"sprite":sprite,"x":width/3,"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15,"y":200})
 							elif(j == -levelD):
-								renderStack.append({"sprite":sprite,"x":2*(width/3),"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3),"y":200})
 							elif(j == levelD):
-								renderStack.append({"sprite":sprite,"x":0,"y":200})
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0,"y":200})
+						elif(tile == 8):
+							x = 69
+							y = round((89/i)+50*i)
+							sprite = pygame.transform.scale(barrelImg,(x,y))
+							if(j == 0):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15+70,"y":300})
+							elif(j == levelD):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3)+70,"y":300})
+							elif(j == -levelD):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0+70,"y":300})
+						elif(tile == 'D'):
+							x = 200
+							y = round((300/i))
+							sprite = pygame.transform.scale(demonImg,(x,y))
+							if(j == 0):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":width/3-(5-1)*15+70,"y":300})
+							elif(j == 1):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":2*(width/3)+70,"y":300})
+							elif(j == -1):
+								renderStack.append({'name':tile,'index':index,"sprite":sprite,"x":0+70,"y":300})
 			if(count == 1):
 				k = len(renderStack)
 				print(renderStack[k-1]["sprite"])
@@ -338,7 +445,9 @@ def envRender():
 			print("Count: " + str(count))
 			count = 0
 	renderStack = renderStack[::-1]
+	draw = True
 	for i in renderStack:
+
 		screen.blit(i["sprite"],(i["x"],i["y"]))
 						
 
@@ -409,6 +518,7 @@ while not done:
 				print(PlayerOrientation)
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				pos = pygame.mouse.get_pos()
+				hitScan(pos[0],pos[1])
 				if(pos[0] < gunX):
 					gunX -= 10
 				elif(pos[1] < gunX):
@@ -426,13 +536,14 @@ while not done:
 
 	
 	movementCount = 0
-	screen.blit(cityimg,(0,200))
-	screen.blit(cityimg2,(150,130))
-	screen.blit(cityimg,(670,200))
+	#screen.blit(cityimg,(0,200))
+	#screen.blit(cityimg2,(150,130))
+	#screen.blit(cityimg,(670,200))
 	
 
 		
 	envRender()
+	
 
 	if(fireToggle == 0):
 		if(weaponToggle):
